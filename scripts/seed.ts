@@ -1,6 +1,6 @@
-import { connectDb } from '~/server/utils/db'
-import User from '~/models/User'
-import Rule from '~/models/Rule'
+import { connectDb } from '../server/utils/db'
+import User from '../models/User'
+import Rule from '../models/Rule'
 import bcrypt from 'bcryptjs'
 
 async function run(){
