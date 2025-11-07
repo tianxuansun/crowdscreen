@@ -1,9 +1,9 @@
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import User from '~/models/User'
-import { connectDb } from '~/server/utils/db'
-import { signToken } from '~/server/utils/auth'
-
+import User from '../../models/User'
+import { connectDb } from '../../utils/db'
+import { signToken } from '../../utils/auth'
+import { eventHandler, createError, readBody } from 'h3'
 const bodySchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),

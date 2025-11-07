@@ -1,6 +1,6 @@
-import Item from '~/models/Item'
-import Decision from '~/models/Decision'
-import { connectDb } from '~/server/utils/db'
+import Item from '../models/Item'
+import Decision from '../models/Decision'
+import { connectDb } from '../utils/db'
 export default eventHandler( async () => {
   await connectDb()
   const [pending, approved, rejected, decisions] = await Promise.all([

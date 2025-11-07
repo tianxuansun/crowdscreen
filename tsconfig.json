@@ -1,16 +1,28 @@
 {
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
-    },
-    "types": ["node"],
-    "jsx": "preserve",
-    "strict": true,
-    "skipLibCheck": true
-  }
+      "~/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    ".nuxt",
+    "nuxt.config.ts",
+    "server",
+    "server/api",
+    "server/plugins",
+    "server/utils",
+    "server/models",
+    "middleware",
+    "scripts",
+    "pages",
+    "components",
+    "types"
+  ]
 }

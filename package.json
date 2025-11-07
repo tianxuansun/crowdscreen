@@ -6,7 +6,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "start": "node .output/server/index.mjs",
-    "seed": "ts-node -r tsconfig-paths/register scripts/seed.ts",
+    "seed": "tsx scripts/seed.ts",
     "test:e2e": "playwright test",
     "docker:build": "docker build -t crowdscreen:local -f docker/Dockerfile .",
     "docker:up": "docker compose -f docker/docker-compose.yml up --build"
@@ -15,7 +15,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2",
+    "mongoose": "^8.19.3",
     "nuxt": "^4.2.0",
     "socket.io": "^4.8.1",
     "vue": "^3.5.22",
@@ -28,8 +28,10 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.0",
     "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }

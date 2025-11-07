@@ -1,8 +1,9 @@
-import Item from '~/models/Item'
-import Flag from '~/models/Flag'
-import { connectDb } from '~/server/utils/db'
-import { getUserFromEvent } from '~/server/utils/auth'
-import { canModerate } from '~/server/utils/roles'
+import Item from '../../models/Item'
+import Flag from '../../models/Flag'
+import { connectDb } from '../../utils/db'
+import { getUserFromEvent } from '../../utils/auth'
+import { canModerate } from '../../utils/roles'
+import { eventHandler, createError, getQuery } from 'h3'
 
 export default eventHandler( async (event) => {
   await connectDb()

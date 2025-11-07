@@ -1,7 +1,8 @@
-import Rule from '~/models/Rule'
-import { connectDb } from '~/server/utils/db'
-import { getUserFromEvent } from '~/server/utils/auth'
-import { canModerate } from '~/server/utils/roles'
+import Rule from '../../models/Rule'
+import { connectDb } from '../../utils/db'
+import { getUserFromEvent } from '../../utils/auth'
+import { canModerate } from '../../utils/roles'
+import { eventHandler, createError, getQuery, readBody} from 'h3'
 export default eventHandler(async (event) => {
   await connectDb()
   const user = getUserFromEvent(event)

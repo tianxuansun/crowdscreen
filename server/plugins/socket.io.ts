@@ -1,14 +1,20 @@
-import { Server } from 'socket.io'
+// server/plugins/socket.io.ts
+import { Server } from 'socket.io';
+import { defineNitroPlugin } from '#imports';
+
 export default defineNitroPlugin((nitroApp) => {
-  const io = new Server(nitroApp.h3App?.server, {
-    cors: { origin: '*' }
-  })
-  // Expose globally
-  // @ts-ignore
-  nitroApp['io'] = io
-  console.log('[socket] ready')
-})
-function io() {
-  // @ts-ignore
-  return useNitroApp()['io'] as import('socket.io').Server
-}
+  const server = nitroApp.h3App?.server;
+  if (!server) {
+    console.warn('[socket] No HTTP server, skipping Socket.IO setup');
+    return;
+  }
+
+  const io = new Server(server, {
+    cors: { origin: '*' },
+  });
+
+  // Attach to nitroApp so we can grab it in API handlers
+  nitroApp.io = io;
+
+  console.log('[socket] initialized');
+});
