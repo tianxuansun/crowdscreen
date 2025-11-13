@@ -1,6 +1,7 @@
 import Item from '../models/Item'
 import Decision from '../models/Decision'
 import { connectDb } from '../utils/db'
+import { eventHandler } from 'h3'
 export default eventHandler( async () => {
   await connectDb()
   const [pending, approved, rejected, decisions] = await Promise.all([

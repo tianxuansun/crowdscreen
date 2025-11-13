@@ -6,9 +6,9 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./*"
-      ]
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "#imports": [".nuxt/types/imports"]
     }
   },
   "include": [
@@ -23,6 +23,9 @@
     "scripts",
     "pages",
     "components",
+    "composables",
+    "plugins",
     "types"
-  ]
+  ],
+  "types": ["@nuxt/types"]
 }

@@ -1,4 +1,7 @@
+import { defineNuxtConfig } from 'nuxt/config';
+
 export default defineNuxtConfig({
+  nitro: { compatibilityDate: '2025-11-06' },
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
   runtimeConfig: {
@@ -9,4 +12,4 @@ export default defineNuxtConfig({
       socketUrl: '' // same origin by default
     }
   }
-})
+});
