@@ -1,24 +1,33 @@
+// tests/e2e/flow.spec.ts
 import { test, expect } from '@playwright/test'
 
-test('dev moderator sees queue updates', async ({ page }) => {
-  // Dev helper: set a cookie to simulate moderator
-  await page.request.post('/api/dev/loginAs?role=moderator')
-
-  await page.goto('/queue')
-  await expect(page.getByText('Moderator Queue')).toBeVisible()
-
-  // Submit an item via API (simulate another user)
-  const res = await page.request.post('/api/auth/register', {
+test('submit content appears in queue', async ({ page, request }) => {
+  // Register or login a user
+  const r = await request.post('/api/auth/register', {
     data: { email: 'u1@demo.dev', name: 'U1', password: 'password123' }
   })
-  const { token } = await res.json()
-  await page.request.post('/api/items', {
+  const reg = await r.json()
+  const token = reg.token
+
+  // Submit flagged content
+  await request.post('/api/items', {
     headers: { Authorization: `Bearer ${token}` },
     data: { type: 'text', payload: { text: 'this is spam clickbait' } }
   })
 
-  // Queue should show the item after socket/refresh (allow a moment)
-  await page.waitForTimeout(1000)
+  // Go to queue (requires moderator: use dev login endpoint to get a mod token if needed)
+  const mod = await request.get('/api/dev/loginAs?role=moderator')
+  const { token: modToken } = await mod.json()
+
+  // Inject token into browser localStorage
+  await page.goto('/login')
+  await page.evaluate((t) => localStorage.setItem('token', t), modToken)
+
+  await page.goto('/queue')
+  await expect(page.getByText('Moderator Queue')).toBeVisible()
+
+  // Wait a moment and reload to see new item
+  await page.waitForTimeout(800)
   await page.reload()
   await expect(page.getByText('spam clickbait')).toBeVisible()
 })
