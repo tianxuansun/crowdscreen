@@ -1,10 +1,14 @@
 // middleware/auth.global.ts
 import { defineNuxtRouteMiddleware } from '#app';
-import type { RouteLocationNormalized } from 'vue-router';
 
-export default defineNuxtRouteMiddleware((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-  // For now this is a no-op placeholder.
-  // Later you can:
-  // - read token from localStorage or cookie
-  // - redirect to /login if accessing /queue or /rules without auth
+export default defineNuxtRouteMiddleware((to) => {
+  if (process.server) return;
+  const protectedRoutes = ['/queue', '/rules', '/metrics'];
+  if (!protectedRoutes.includes(to.path)) return;
+
+  const t = localStorage.getItem('token');
+  if (!t) {
+    const router = useRouter();
+    return router.push('/login');
+  }
 });
