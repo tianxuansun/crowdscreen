@@ -2,10 +2,10 @@
 <script setup lang="ts">
 const { $api, $socket } = useNuxtApp();
 const typedApi = $api as (url: string, options: any) => Promise<any>;
-const typedSocket = $socket as {
-  on: (event: string, callback: () => void) => void;
-  off: (event: string, callback: () => void) => void;
-};
+const typedSocket = ($socket as any) as {
+  on?: (event: string, callback: () => void) => void;
+  off?: (event: string, callback: () => void) => void;
+} | undefined;
 const items = ref<any[]>([]);
 const flags = ref<any[]>([]);
 
@@ -26,9 +26,11 @@ function prev(){ if (canPrev.value) { page.value--; load() } }
 function next(){ if (canNext.value) { page.value++; load() } }
 
 onMounted(() => {
-  load()
-  typedSocket.on('queue:update', load)
-  typedSocket.on('item:update', load)
+  load();
+  if (typedSocket?.on) {
+    typedSocket.on('queue:update', load);
+    typedSocket.on('item:update', load);
+  }
 })
 async function decide(itemId: string, decision: 'approve' | 'reject') {
   await typedApi('/api/decisions', { method: 'POST', body: { itemId, decision, notes: '' } });
@@ -40,14 +42,11 @@ function scoreFor(id: string) {
     .reduce((s: number, f: any) => s + (f.score || 0), 0);
 }
 
-onMounted(() => {
-  load();
-  typedSocket.on('queue:update', load);
-  typedSocket.on('item:update', load);
-});
 onBeforeUnmount(() => {
-  typedSocket.off('queue:update', load);
-  typedSocket.off('item:update', load);
+  if (typedSocket?.off) {
+    typedSocket.off('queue:update', load);
+    typedSocket.off('item:update', load);
+  }
 });
 </script>
 

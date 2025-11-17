@@ -1,15 +1,14 @@
-import { defineNuxtRouteMiddleware } from '#app';
+import { defineNuxtRouteMiddleware, navigateTo } from '#app';
+import type { RouteLocationNormalized } from 'vue-router';
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   if (process.server) return;
+  if (process.env.AUTH_DEV_BYPASS === 'true') return; // allow tests/dev to access
   const protectedRoutes = ['/queue', '/rules', '/metrics'];
   if (!protectedRoutes.includes(to.path)) return;
   const t = localStorage.getItem('token');
   if (!t) {
-    console.warn('[auth.global] No token found in localStorage'); // Debugging
-    const router = useRouter();
-    return router.push('/login');
+    return navigateTo('/login');
   }
-  console.log('[auth.global] Token found:', t); // Debugging
-  // Optionally, validate the token structure here
+  // Optionally, validate the token structure here.
 });
