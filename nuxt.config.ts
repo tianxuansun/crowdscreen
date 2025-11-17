@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     mongodbUri: process.env.MONGODB_URI,
     authDevBypass: process.env.AUTH_DEV_BYPASS === 'true',
     public: {
-      socketUrl: '' // same origin by default
+      socketUrl: '', // same origin by default
+      authDevBypass: process.env.AUTH_DEV_BYPASS === 'true'
     }
   }
 });

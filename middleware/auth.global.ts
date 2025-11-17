@@ -3,7 +3,10 @@ import type { RouteLocationNormalized } from 'vue-router';
 
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   if (process.server) return;
-  if (process.env.AUTH_DEV_BYPASS === 'true') return; // allow tests/dev to access
+  const {
+    public: { authDevBypass }
+  } = useRuntimeConfig();
+  if (authDevBypass) return; // allow tests/dev to access
   const protectedRoutes = ['/queue', '/rules', '/metrics'];
   if (!protectedRoutes.includes(to.path)) return;
   const t = localStorage.getItem('token');
