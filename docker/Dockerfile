@@ -1,15 +1,12 @@
-FROM node:20-alpine AS deps
+# docker/Dockerfile
+FROM node:20-bookworm AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN npx nuxt build
 
-FROM node:20-alpine AS runner
+FROM node:20-bookworm AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/.output ./.output

@@ -1,9 +1,22 @@
 services:
   mongo:
     image: mongo:7
+    container_name: crowdscreen-mongo
     restart: unless-stopped
-    ports: [ "27017:27017" ]
+    ports: ["27017:27017"]
     volumes:
       - mongo-data:/data/db
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: crowdscreen-app
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/crowdscreen
+      JWT_SECRET: dev-secret
+      AUTH_DEV_BYPASS: "true"
+    ports: ["3000:3000"]
+    depends_on:
+      - mongo
 volumes:
   mongo-data:
