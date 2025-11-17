@@ -9,11 +9,27 @@ const typedSocket = $socket as {
 const items = ref<any[]>([]);
 const flags = ref<any[]>([]);
 
+const page = ref(1)
+const pageSize = 10
+const total = ref(0)
+
 async function load() {
-  const data = await typedApi('/api/items', { query: { status: 'pending' } });
-  items.value = data.items;
-  flags.value = data.flags;
+  const data = await typedApi('/api/items', { query: { status: 'pending', page, pageSize } })
+  items.value = data.items
+  flags.value = data.flags
+  total.value = data.total
 }
+
+const canPrev = computed(() => page.value > 1)
+const canNext = computed(() => page.value * pageSize < total.value)
+function prev(){ if (canPrev.value) { page.value--; load() } }
+function next(){ if (canNext.value) { page.value++; load() } }
+
+onMounted(() => {
+  load()
+  typedSocket.on('queue:update', load)
+  typedSocket.on('item:update', load)
+})
 async function decide(itemId: string, decision: 'approve' | 'reject') {
   await typedApi('/api/decisions', { method: 'POST', body: { itemId, decision, notes: '' } });
   await load();
@@ -63,5 +79,11 @@ onBeforeUnmount(() => {
         </tr>
       </tbody>
     </table>
+    <div class="flex items-center gap-3">
+      <button class="btn btn-sm" :disabled="!canPrev" @click="prev">Prev</button>
+      <div>Page {{ page }} / {{ Math.max(1, Math.ceil(total / 10)) }}</div>
+      <button class="btn btn-sm" :disabled="!canNext" @click="next">Next</button>
+    </div>
+
   </div>
 </template>

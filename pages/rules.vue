@@ -27,6 +27,15 @@ async function save() {
   await load();
   reset();
 }
+async function toggle(id:string){
+  await typedApi(`/api/rules/${id}/toggle`, { method:'POST' })
+  await load()
+}
+async function removeRule(id:string){
+  await typedApi(`/api/rules/${id}`, { method:'DELETE' })
+  await load()
+}
+
 onMounted(load);
 </script>
 
@@ -38,6 +47,10 @@ onMounted(load);
         <div class="font-semibold">{{ r.name }}</div>
         <div class="text-sm opacity-70">type: {{ r.type }} · score: {{ r.score }} · enabled: {{ r.enabled ? 'yes' : 'no' }}</div>
         <div class="text-xs mt-1 break-words">config: {{ r.config }}</div>
+        <div class="mt-2 flex gap-2">
+          <button class="btn btn-xs" @click="toggle(r._id)">{{ r.enabled ? 'Disable' : 'Enable' }}</button>
+          <button class="btn btn-xs btn-error" @click="removeRule(r._id)">Delete</button>
+        </div>
       </div>
     </div>
 
