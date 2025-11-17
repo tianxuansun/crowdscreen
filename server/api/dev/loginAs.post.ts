@@ -18,5 +18,7 @@ export default eventHandler((event) => {
     role,
   });
 
+  console.log('[loginAs] Generated token:', token); // Debugging
+
   return { token, user: { id: 'dev-user-id', email, role } };
 });
