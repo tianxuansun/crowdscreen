@@ -13,6 +13,5 @@ function useNitroApp(): NitroApp {
 }
 
 export function getIO(): IOServer | undefined {
-  const app = useNitroApp();
-  return app.io as IOServer | undefined;
+  return (globalThis as any).__io as IOServer | undefined
 }
