@@ -1,18 +1,25 @@
 import Item from '../../models/Item'
 import Flag from '../../models/Flag'
 import { connectDb } from '../../utils/db'
-import { getUserFromEvent } from '../../utils/auth'
-import { canModerate } from '../../utils/roles'
-import { eventHandler, createError, getQuery } from 'h3'
+import { eventHandler, getQuery } from 'h3'
+import { requireUser, requireModerator } from '../../utils/guards'
 
-export default eventHandler( async (event) => {
+export default eventHandler(async (event) => {
   await connectDb()
-  const user = getUserFromEvent(event)
-  if (!user) throw createError({ statusCode: 401 })
-  const { status='pending' } = getQuery(event)
-  if (status !== 'pending' && !canModerate(user.role)) throw createError({ statusCode: 403 })
-  const items = await Item.find({ status }).sort({ createdAt: -1 }).limit(100).lean()
+  const query = getQuery(event)
+  const status = (query.status as string) || 'pending'
+  const page = Math.max(1, Number(query.page || 1))
+  const pageSize = Math.max(1, Math.min(50, Number(query.pageSize || 10)))
+  const skip = (page - 1) * pageSize
+
+  if (status !== 'pending') requireModerator(event) // only moderators can see non-pending
+  else requireUser(event)
+
+  const [items, count] = await Promise.all([
+    Item.find({ status }).sort({ createdAt: -1 }).skip(skip).limit(pageSize).lean(),
+    Item.countDocuments({ status })
+  ])
   const ids = items.map(i => i._id)
   const flags = await Flag.find({ itemId: { $in: ids } }).lean()
-  return { items, flags }
+  return { items, flags, page, pageSize, total: count }
 })
