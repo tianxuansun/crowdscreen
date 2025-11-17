@@ -9,4 +9,5 @@ export default defineNuxtRouteMiddleware((to) => {
     const router = useRouter();
     return router.push('/login');
   }
+  // Optionally, validate the token structure here
 });
