@@ -3,6 +3,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   if (process.server) return;
+  if (process.env.CI === 'true') return; // compile-time bypass for CI builds
   const {
     public: { authDevBypass, ci }
   } = useRuntimeConfig();
