@@ -2,7 +2,6 @@ import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
   ssr: true,
-  nitro: { compatibilityDate: '2025-11-17' },
   devtools: { enabled: false },
   modules: ['@nuxtjs/tailwindcss'],
   runtimeConfig: {
