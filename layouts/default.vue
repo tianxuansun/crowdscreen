@@ -17,9 +17,6 @@ const route = useRoute()
       </nav>
     </header>
     <main class="max-w-5xl mx-auto p-6">
-      <div v-if="route.path === '/queue'" class="mb-4">
-        <h1 class="text-2xl font-bold">Moderator Queue</h1>
-      </div>
       <slot />
     </main>
   </div>
