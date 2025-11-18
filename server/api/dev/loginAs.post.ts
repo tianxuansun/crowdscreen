@@ -3,7 +3,8 @@ import { signToken } from '../../utils/auth';
 import type { Role } from '../../utils/roles';
 
 export default eventHandler((event) => {
-  if (process.env.AUTH_DEV_BYPASS !== 'true') {
+  const allow = process.env.AUTH_DEV_BYPASS === 'true' || process.env.CI === 'true' || process.env.NODE_ENV !== 'production'
+  if (!allow) {
     throw createError({ statusCode: 403, statusMessage: 'Dev login disabled' });
   }
 

@@ -11,7 +11,8 @@ export default defineNuxtConfig({
     authDevBypass: process.env.AUTH_DEV_BYPASS === 'true',
     public: {
       socketUrl: '', // same origin by default
-      authDevBypass: process.env.AUTH_DEV_BYPASS === 'true'
+      authDevBypass: process.env.AUTH_DEV_BYPASS === 'true',
+      ci: process.env.CI === 'true'
     }
   }
 });
