@@ -2,6 +2,16 @@
 import { test, expect } from '@playwright/test'
 
 test('submit content appears in queue', async ({ page, request }) => {
+  // Capture browser console and page errors for CI diagnostics
+  page.on('console', (msg) => {
+    // Forward all console logs from the browser to the test output
+    // eslint-disable-next-line no-console
+    console.log(`[browser:${msg.type()}]`, msg.text())
+  })
+  page.on('pageerror', (err) => {
+    // eslint-disable-next-line no-console
+    console.error('[pageerror]', err?.message || err)
+  })
   // Register or login a user
   const r = await request.post('/api/auth/register', {
     data: { email: 'u1@demo.dev', name: 'U1', password: 'password123' }
@@ -24,6 +34,8 @@ test('submit content appears in queue', async ({ page, request }) => {
   await page.evaluate((t) => localStorage.setItem('token', t), modToken)
 
   await page.goto('/queue')
+  // Give hydration/network a brief moment before asserting
+  await page.waitForLoadState('networkidle')
   await expect(page.getByText('Moderator Queue')).toBeVisible()
 
   // Wait a moment and reload to see new item
