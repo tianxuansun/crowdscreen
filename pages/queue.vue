@@ -14,7 +14,7 @@ const pageSize = 10
 const total = ref(0)
 
 async function load() {
-  const data = await typedApi('/api/items', { query: { status: 'pending', page, pageSize } })
+  const data = await typedApi('/api/items', { query: { status: 'pending', page: page.value, pageSize } })
   items.value = data.items
   flags.value = data.flags
   total.value = data.total
