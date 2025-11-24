@@ -45,7 +45,7 @@ onMounted(load);
 
 <template>
   <div class="grid md:grid-cols-2 gap-6">
-    <!-- List -->
+    <!-- Existing rules list -->
     <div data-testid="rules-list">
       <h2 class="text-xl font-bold mb-2">Existing Rules</h2>
 
@@ -53,11 +53,12 @@ onMounted(load);
         v-for="r in rules"
         :key="r._id"
         class="border rounded p-3 mb-2"
-        :data-testid="`rule-card-${r._id}`"
+        data-testid="rule-item"
         role="group"
         :aria-label="`Rule card: ${r.name || r._id}`"
+        :data-ci-rule-id="r._id"
       >
-        <!-- extra wrapper so getByText(name).locator('..').locator('..') === card -->
+        <!-- extra wrapper so getByText(name).locator('..').locator('..') === card if needed -->
         <div class="rule-card__header">
           <div class="font-semibold" data-testid="rule-name">{{ r.name }}</div>
         </div>
@@ -65,6 +66,7 @@ onMounted(load);
         <div class="text-sm opacity-70">
           type: {{ r.type }} · score: {{ r.score }} · enabled: {{ r.enabled ? 'yes' : 'no' }}
         </div>
+
         <div class="text-xs mt-1 break-words">
           config: {{ typeof r.config === 'object' ? JSON.stringify(r.config) : r.config }}
         </div>
@@ -72,7 +74,7 @@ onMounted(load);
         <div class="mt-2 flex gap-2">
           <button
             class="btn btn-xs"
-            :data-testid="`rule-toggle-${r._id}`"
+            data-testid="rule-toggle"
             :aria-label="`${r.enabled ? 'Disable' : 'Enable'} rule: ${r.name || r._id}`"
             @click="toggle(r._id)"
           >
@@ -81,7 +83,7 @@ onMounted(load);
 
           <button
             class="btn btn-xs btn-error"
-            :data-testid="`rule-delete-${r._id}`"
+            data-testid="rule-delete"
             :aria-label="`Delete rule: ${r.name || r._id}`"
             @click="removeRule(r._id)"
           >
@@ -91,7 +93,7 @@ onMounted(load);
       </div>
     </div>
 
-    <!-- Create form -->
+    <!-- Add rule form -->
     <div data-testid="rules-form">
       <h2 class="text-xl font-bold mb-2">Add Rule</h2>
 
