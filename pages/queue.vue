@@ -25,6 +25,33 @@ const canNext = computed(() => page.value * pageSize < total.value)
 function prev(){ if (canPrev.value) { page.value--; load() } }
 function next(){ if (canNext.value) { page.value++; load() } }
 
+// ...
+function applyItemUpdate(payload: { itemId: string; status: string }) {
+  const idx = items.value.findIndex(i => String(i._id) === String(payload.itemId))
+  if (idx >= 0) {
+    items.value[idx].status = payload.status
+  } else {
+    // For safety, refresh if we don't have it locally
+    load()
+  }
+}
+
+onMounted(() => {
+  load();
+  if (typedSocket?.on) {
+    typedSocket.on('queue:update', load); // new content arrives -> refresh page slice
+    typedSocket.on('item:update', applyItemUpdate);
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typedSocket?.off) {
+    typedSocket.off('queue:update', load);
+    typedSocket.off('item:update', applyItemUpdate);
+  }
+})
+
+
 onMounted(() => {
   load();
   if (typedSocket?.on) {
