@@ -37,6 +37,7 @@ This project is built as the final for **Advanced Web Application Development** 
 * **Realtime:** Socket.IO (server plugin, client via `socket.io-client`)
 * **Tooling:** Playwright, Docker, Kubernetes
 
+
 ---
 
 ## Data Model (high level)
@@ -207,7 +208,6 @@ kubectl apply -f k8s/app.yaml
 * The `/queue` page listens to `queue:update` and `item:update` if a client socket is available.
 
 ---
-
 ## Troubleshooting
 
 * **`Error: MONGODB_URI is not set`**
@@ -221,7 +221,6 @@ kubectl apply -f k8s/app.yaml
   You might see `[socket] No HTTP server, skipping Socket.IO setup` — expected in the CI webServer mode.
 
 ---
-
 ## Folder Structure (high level)
 
 ```
@@ -240,8 +239,6 @@ k8s/             # Kubernetes manifests
 ```
 
 ---
-
 ## License
 
 MIT
-
