@@ -3,8 +3,8 @@
 const { $api, $socket } = useNuxtApp();
 const typedApi = $api as (url: string, options: any) => Promise<any>;
 const typedSocket = ($socket as any) as {
-  on?: (event: string, callback: () => void) => void;
-  off?: (event: string, callback: () => void) => void;
+  on?: (event: string, callback: (...args: any[]) => void) => void;
+  off?: (event: string, callback: (...args: any[]) => void) => void;
 } | undefined;
 const items = ref<any[]>([]);
 const flags = ref<any[]>([]);
@@ -25,11 +25,28 @@ const canNext = computed(() => page.value * pageSize < total.value)
 function prev(){ if (canPrev.value) { page.value--; load() } }
 function next(){ if (canNext.value) { page.value++; load() } }
 
+// ...
+function applyItemUpdate(payload: { itemId: string; status: string }) {
+  const idx = items.value.findIndex(i => String(i._id) === String(payload.itemId))
+  if (idx >= 0) {
+    items.value[idx].status = payload.status
+  } else {
+    // For safety, refresh if we don't have it locally
+    load()
+  }
+}
+
+// Socket callback wrappers (stable references for on/off)
+function handleQueueUpdate(..._args: any[]) { load() }
+function handleItemUpdate(payload: { itemId: string; status: string }) { applyItemUpdate(payload) }
+
 onMounted(() => {
   load();
   if (typedSocket?.on) {
-    typedSocket.on('queue:update', load);
-    typedSocket.on('item:update', load);
+    // queue:update -> new item added or status changed affecting pagination slice
+    typedSocket.on('queue:update', handleQueueUpdate);
+    // item:update -> status change for single item; attempt incremental update first
+    typedSocket.on('item:update', handleItemUpdate);
   }
 })
 async function decide(itemId: string, decision: 'approve' | 'reject') {
@@ -44,8 +61,8 @@ function scoreFor(id: string) {
 
 onBeforeUnmount(() => {
   if (typedSocket?.off) {
-    typedSocket.off('queue:update', load);
-    typedSocket.off('item:update', load);
+    typedSocket.off('queue:update', handleQueueUpdate);
+    typedSocket.off('item:update', handleItemUpdate);
   }
 });
 </script>
