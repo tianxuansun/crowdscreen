@@ -1,0 +1,20 @@
+# Build artifacts / deps
+node_modules
+.nuxt
+.output
+dist
+coverage
+playwright-report
+test-results
+
+# Tests & local stuff
+tests
+*.log
+
+# VCS / CI
+.git
+.github
+
+# Env
+.env
+.env.*

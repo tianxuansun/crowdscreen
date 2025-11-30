@@ -9,7 +9,12 @@
       "~/*": ["./*"],
       "@/*": ["./*"],
       "#imports": [".nuxt/types/imports"]
-    }
+    },
+    "moduleResolution": "Bundler",
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "types": ["node", "nuxt"],
+    "skipLibCheck": true
   },
   "include": [
     ".nuxt",
@@ -27,5 +32,4 @@
     "plugins",
     "types"
   ],
-  "types": ["@nuxt/types"]
 }
