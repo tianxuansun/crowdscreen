@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: app
-          image: your-dockerhub-username/crowdscreen:latest
+          image: ghcr.io/<your-gh-username>/crowdscreen:latest   # <= update this
+          imagePullPolicy: Always 
           ports:
             - containerPort: 3000
           env:
