@@ -1,33 +1,34 @@
 // server/api/items/index.get.ts
-import { eventHandler, getQuery } from 'h3'
-import { connectDb } from '../../utils/db'
 import Item from '../../models/Item'
 import Flag from '../../models/Flag'
+import { connectDb } from '../../utils/db'
+import { eventHandler, getQuery } from 'h3'
+import { z } from 'zod'
+
+const qSchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(10),
+})
 
 export default eventHandler(async (event) => {
   await connectDb()
 
-  const q = getQuery(event)
-  const status = typeof q.status === 'string' ? q.status : 'pending'
-  const page = Math.max(1, parseInt(String(q.page ?? '1'), 10) || 1)
-  const pageSize = Math.min(100, Math.max(1, parseInt(String(q.pageSize ?? '10'), 10) || 10))
+  const { status, page, pageSize } = qSchema.parse(getQuery(event))
+  const where: any = { status }
 
-  const filter: Record<string, any> = {}
-  if (['pending', 'approved', 'rejected'].includes(status)) {
-    filter.status = status
-  }
+  const total = await Item.countDocuments(where)
 
-  const [items, total] = await Promise.all([
-    Item.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
-      .lean(),
-    Item.countDocuments(filter)
-  ])
+  const items = await Item.find(where)
+    .sort({ createdAt: -1, _id: -1 })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .lean()
 
   const ids = items.map(i => i._id)
-  const flags = ids.length ? await Flag.find({ itemId: { $in: ids } }).lean() : []
+  const flags = ids.length
+    ? await Flag.find({ itemId: { $in: ids } }).lean()
+    : []
 
-  return { items, flags, total }
+  return { items, total, flags }
 })

@@ -85,13 +85,25 @@ onBeforeUnmount(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="i in items" :key="i._id">
-          <td class="max-w-xl truncate">{{ i.payload?.text }}</td>
+        <tr v-for="i in items" :key="i._id" data-testid="queue-item">
+          <td class="max-w-xl truncate" data-testid="queue-text">{{ i.payload?.text }}</td>
           <td>{{ scoreFor(i._id) }}</td>
           <td class="uppercase">{{ i.status }}</td>
           <td class="flex gap-2">
-            <button class="btn btn-xs btn-success" @click="decide(i._id, 'approve')">Approve</button>
-            <button class="btn btn-xs btn-error" @click="decide(i._id, 'reject')">Reject</button>
+            <button
+              class="btn btn-xs btn-success"
+              data-testid="queue-approve"
+              @click="decide(i._id, 'approve')"
+            >
+              Approve
+            </button>
+            <button
+              class="btn btn-xs btn-error"
+              data-testid="queue-reject"
+              @click="decide(i._id, 'reject')"
+            >
+              Reject
+            </button>
           </td>
         </tr>
       </tbody>
