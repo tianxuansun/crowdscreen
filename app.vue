@@ -1,7 +1,8 @@
 <template>
-  <NuxtLayout>
-    <NuxtRouteAnnouncer />
-    <NuxtPage />
-  </NuxtLayout>
-  
+  <div class="min-h-screen">
+    <NavBar />
+    <div class="p-6">
+      <NuxtPage />
+    </div>
+  </div>
 </template>
