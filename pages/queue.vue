@@ -51,6 +51,7 @@ onMounted(() => {
 })
 async function decide(itemId: string, decision: 'approve' | 'reject') {
   await typedApi('/api/decisions', { method: 'POST', body: { itemId, decision, notes: '' } });
+  items.value = items.value.filter(i => String(i._id) !== String(itemId))
   await load();
 }
 function scoreFor(id: string) {
