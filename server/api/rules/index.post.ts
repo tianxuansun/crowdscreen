@@ -42,7 +42,22 @@ export default eventHandler(async (event) => {
     raw.config.keywords = raw.config.keywords.split(',').map((s: string) => s.trim()).filter(Boolean)
   }
   const data = bodySchema.parse(raw)
+  if (data.type === 'keyword') {
+  // normalize + dedupe
+    data.config.keywords = Array.from(
+      new Set(data.config.keywords.map((s: string) => s.trim()).filter(Boolean))
+    )
+  }
 
+  if (data.type === 'regex') {
+  // ensure the regex compiles
+    try {
+    // eslint-disable-next-line no-new
+      new RegExp(data.config.pattern, 'i')
+    } catch {
+      throw createError({ statusCode: 400, statusMessage: 'Invalid regex pattern' })
+    }
+  }
   if (data.type === 'threshold') {
     const existing = await Rule.countDocuments({ type: 'threshold' })
     if (existing > 0) {

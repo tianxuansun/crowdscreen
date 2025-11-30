@@ -8,13 +8,30 @@ import { z } from 'zod'
 
 const payloadSchema = z.object({
   text: z.string().min(1, 'text required').max(10_000).optional(),
+  link: z.string().url('invalid url').max(2048).optional(),
   category: z.string().min(1).max(120).optional(),
   tags: z.array(z.string().min(1).max(64)).max(50).optional()
-}).refine(v => v.text || true, { message: 'At least text or other modalities expected' })
+})
 
 const bodySchema = z.object({
   type: z.enum(['text', 'link']).default('text'),
   payload: payloadSchema
+}).superRefine((val, ctx) => {
+  // Require text when type=text; require link when type=link
+  if (val.type === 'text' && !val.payload.text) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['payload', 'text'],
+      message: 'text required for type="text"'
+    })
+  }
+  if (val.type === 'link' && !val.payload.link) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['payload', 'link'],
+      message: 'link required for type="link"'
+    })
+  }
 })
 
 export default eventHandler(async (event) => {

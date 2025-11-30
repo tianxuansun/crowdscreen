@@ -7,6 +7,7 @@ import { eventHandler, createError, readBody } from 'h3'
 import { getIO } from '../../utils/socket'
 import { z } from 'zod'
 import mongoose from 'mongoose'
+import User from '../../models/User'
 
 const bodySchema = z.object({
   itemId: z.string().refine(mongoose.isValidObjectId, 'Invalid item id'),
@@ -21,8 +22,22 @@ export default eventHandler(async (event) => {
 
   const { itemId, decision, notes } = bodySchema.parse(await readBody(event))
 
-  await Decision.create({ itemId, moderatorId: user.sub, decision, notes })
+  const item = await Item.findById(itemId).lean()
+  if (!item) throw createError({ statusCode: 404, statusMessage: 'Item not found' })
+  let moderatorId: any = mongoose.isValidObjectId(user.sub) ? user.sub : null
+  if (!moderatorId) {
+    const me = await User.findOne({ email: user.email }).select('_id').lean()
+    if (me?._id) moderatorId = me._id
+  }
+  if (!moderatorId) {
+    const mod = await User.findOne({ role: 'moderator' }).select('_id').lean()
+    if (mod?._id) moderatorId = mod._id
+  }
+  if (!moderatorId) {
+    throw createError({ statusCode: 500, statusMessage: 'No valid moderator id' })
+  }
 
+  await Decision.create({ itemId, moderatorId, decision, notes })
   const status =
     decision === 'approve' ? 'approved' :
     decision === 'reject'  ? 'rejected'  : 'pending'
