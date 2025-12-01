@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="space-y-4">
     <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-bold">Moderation Queue</h1>
+      <h1 class="text-2xl font-bold">Moderator Queue</h1>
       <span class="px-2 py-1 rounded-full text-white text-xs" style="background:#10b981">LIVE</span>
     </div>
 
